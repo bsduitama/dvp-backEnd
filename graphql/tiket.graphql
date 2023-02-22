@@ -1,0 +1,44 @@
+enum Status {
+    OPEN
+    CLOSE
+}
+
+type tiket {
+    id: ID!
+    status: String
+    user: String
+    created_at: DateTime!
+    updated_at: DateTime!
+}
+
+input CreateTiketInput {
+    status: Status
+    user: String!
+}
+
+input UpdateTiketInput {
+    id: ID!
+    status: Status
+    user: String
+}
+
+input DeleteTiketInput{
+    id: ID!
+}
+
+extend type Query{
+    tiket(id: ID! @eq): tiket @find
+    tikets: [tiket!]! @paginate(defaultCount: 5, PaginateType: SIMPLE) @orderBy(column: "created_at", direction: "DESC")
+}
+
+extend type Mutation {
+
+    createTiket(input: CreateTiketInput @spread): tiket!
+    @field(resolver: "TiketMutation@create")
+
+    updateTiket(input: UpdateTiketInput @spread): tiket!
+    @field(resolver: "TiketMutation@update")
+
+    deleteTiket (input: DeleteTiketInput @spread): String
+    @field(resolver: "TiketMutation@delete")
+}
